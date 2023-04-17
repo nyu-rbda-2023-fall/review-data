@@ -1,0 +1,75 @@
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.DoubleWritable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+public class ReviewDataWritable implements Writable {
+    private Text reviewId;
+    private Text userId;
+    private Text businessId;
+
+    private DoubleWritable stars;
+    private IntWritable useful;
+    private IntWritable funny;
+    private IntWritable cool;
+
+    //default constructor for (de)serialization
+    public ReviewDataWritable() {
+        reviewId = new Text();
+	userId = new Text();
+	businessId = new Text();
+    	stars = new DoubleWritable();
+	useful = new IntWritable();
+	funny = new IntWritable();
+	cool = new IntWritable();
+    }
+
+    public void setStars(DoubleWritable stars){
+	    this.stars = stars;
+    }
+
+    public void write(DataOutput dataOutput) throws IOException {
+        reviewId.write(dataOutput); //write familyId
+        userId.write(dataOutput); //write totalAge
+    	businessId.write(dataOutput);
+	stars.write(dataOutput);
+	useful.write(dataOutput);
+	funny.write(dataOutput);
+    }
+    public void readFields(DataInput in) throws IOException {
+    	reviewId.readFields(in);
+	userId.readFields(in);
+	businessId.readFields(in);
+	stars.readFields(in);
+	useful.readFields(in);
+	funny.readFields(in);
+	cool.readFields(in);
+    }
+    public Text getReviewId(){
+	   return reviewId;
+    }
+   public Text getUserId(){
+	  return userId;
+   }
+
+  public Text getBusinessId(){
+	 return businessId;
+  }
+
+ public DoubleWritable getStars(){
+	return stars;
+ }
+public IntWritable getUseful(){
+       return useful;
+}
+public IntWritable getFunny(){
+	return funny;
+}
+public IntWritable getCool(){
+	return cool;
+}
+}
