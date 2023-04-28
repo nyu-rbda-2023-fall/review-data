@@ -29,25 +29,5 @@ public class ReviewReducer extends Reducer<Text, ReviewDataWritable, Text, Revie
 	data.setCool(new DoubleWritable(totalCool/total));
 	context.write(key, data);
     }
-     /*
-    @Override
-    protected void cleanup(Context context) throws IOException, InterruptedException {
-        // Find the business ID with the highest average stars
-        double maxStars = Double.MIN_VALUE;
-        String maxBusinessId = "";
-
-        for (Text key : context.getCurrentKey()) {
-            double stars = context.getCurrentValue().get();
-            if (stars > maxStars) {
-                maxStars = stars;
-                maxBusinessId = key.toString();
-            }
-        }
-
-        // Emit the business ID with the highest average stars as the final output
-        outputKey.set("Business ID with highest average stars");
-        outputValue.set(maxStars);
-        context.write(outputKey, outputValue);
-    }*/
 
 }
