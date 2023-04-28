@@ -5,11 +5,11 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
-
+import org.apache.hadoop.io.NullWritable;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ReviewMapper extends Mapper<LongWritable, Text, Text, ReviewDataWritable> {
+public class ReviewMapper extends Mapper<LongWritable, Text, NullWritable, ReviewDataWritable> {
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -30,7 +30,7 @@ public class ReviewMapper extends Mapper<LongWritable, Text, Text, ReviewDataWri
             String text = jsonNode.get("text").asText();
             String date = jsonNode.get("date").asText();
 	    ReviewDataWritable data = new ReviewDataWritable(new Text(reviewId), new Text(userId), new Text(businessId), new DoubleWritable(stars), new DoubleWritable(useful), new DoubleWritable(funny), new DoubleWritable(cool));
-	    context.write(new Text(businessId), data);
+	    context.write(NullWritable.get(), data);
         } catch (Exception e) {
             // Ignore invalid JSON records
         }
