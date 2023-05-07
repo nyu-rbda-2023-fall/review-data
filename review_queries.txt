@@ -1,0 +1,55 @@
+create external table reviews (reviewId string, userId string, businessId string, stars float, useful float, cool float, funny float) row format delimited fields terminated by ',' location '/user/sl9339_nyu_edu/reviewInput/'; 
+
+--- create external table in Hive, using the output from map reduce
+
+
+presto --schema hive.sl9339_nyu_edu --catalog hive --execute "SELECT 
+  u.userId,
+  AVG(r.stars) AS avg_rating,
+  COUNT(r.reviewId) AS num_reviews,
+  SUM(CASE WHEN r.stars >= 2.5 THEN 1 ELSE 0 END) AS num_positive_reviews,
+  SUM(CASE WHEN r.stars < 2.5 THEN 1 ELSE 0 END) AS num_negative_reviews
+FROM users u
+JOIN reviews r
+  ON u.userId = r.userId
+GROUP BY u.userId
+HAVING COUNT(r.reviewId) > 100
+ORDER BY num_reviews DESC
+LIMIT 10;
+" --output-format CSV > most_reviews.csv; 
+
+-- run presto get sql result for most reviews
+
+presto --schema hive.sl9339_nyu_edu --catalog hive --execute "SELECT 
+  u.userId,
+  u.name,
+AVG(r.stars) AS avg_rating,
+  COUNT(r.reviewId) AS num_reviews,
+  SUM(CASE WHEN r.stars >= 2.5 THEN 1 ELSE 0 END) AS num_positive_reviews,
+  SUM(CASE WHEN r.stars < 2.5 THEN 1 ELSE 0 END) AS num_negative_reviews
+FROM users u
+JOIN reviews r
+  ON u.userId = r.userId
+GROUP BY u.userId, u.name
+HAVING COUNT(r.reviewId) > 100
+ORDER BY num_negative_reviews DESC
+LIMIT 10;
+" --output-format CSV > most_neg_reviews.csv; 
+
+-- most negative reviews
+
+
+presto --schema hive.sl9339_nyu_edu --catalog hive --execute "SELECT u.userId, u.name, COUNT(r.reviewId) AS total_reviews, AVG(r.stars) AS avg_rating,
+       SUM(CASE WHEN r.stars <= 2.5 THEN 1 ELSE 0 END) AS negative_reviews,
+       (SUM(CASE WHEN r.stars <= 2.5 THEN 1 ELSE 0 END) * 1.0 / COUNT(r.reviewId)) AS negative_review_proportion
+FROM users u
+JOIN reviews r ON u.userId = r.userId
+GROUP BY u.userId, u.name
+HAVING COUNT(r.reviewId) >= 100  -- minimum number of reviews
+ORDER BY negative_review_proportion DESC
+LIMIT 10;
+" --output-format CSV > high_proportion_neg.csv;
+
+-- high proportion of negative reviews
+
+
